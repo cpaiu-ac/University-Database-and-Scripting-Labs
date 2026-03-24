@@ -1,0 +1,137 @@
+SELECT *
+FROM title_basics_lite
+WHERE primaryTitle = 'Oppenheimer';
+
+EXPLAIN ANALYZE
+SELECT *
+FROM title_basics_lite
+WHERE primaryTitle = 'Oppenheimer';
+
+CREATE INDEX idx_primaryTitle_basics
+ON title_basics_lite(primaryTitle);
+
+SHOW INDEX
+FROM title_basics_lite;
+
+DROP INDEX idx_primaryTitle_basics
+ON title_basics_lite;
+
+CREATE TABLE actori(
+    nume VARCHAR(20),
+    varsta INT,
+    INDEX idx_nume_actori (nume)
+);
+
+SELECT AVG(sal) AS "avgSal", dname
+FROM emp
+    JOIN dept
+        ON dept.deptno = emp.deptno
+GROUP BY dname;
+
+CREATE VIEW v_NumeDept AS
+    SELECT AVG(sal) as "avgSal", dname
+    FROM emp
+        JOIN dept
+            ON dept.deptno = emp.deptno
+    GROUP BY dname;
+
+SELECT *
+FROM v_NumeDept;
+
+DROP VIEW v_NumeDept;
+
+-- problema 1
+
+DROP INDEX idx_primaryTitle_basics
+ON title_basics_lite;
+
+-- problema 2
+
+SELECT primaryTitle, averageRating
+FROM title_basics_lite
+    JOIN title_ratings_lite
+        ON title_basics_lite.tconst = title_ratings_lite.tconst;
+
+-- problema 3
+
+EXPLAIN
+SELECT primaryTitle, averageRating
+FROM title_basics_lite, title_ratings_lite;
+
+-- problema 4
+
+CREATE INDEX idx_primaryTitle_basics
+ON title_basics_lite(primaryTitle);
+
+EXPLAIN ANALYZE
+select primaryTitle
+from title_basics_lite;
+
+-- problema 5
+
+SELECT primaryTitle, averageRating
+FROM title_basics_lite
+    JOIN title_ratings_lite
+        ON title_basics_lite.tconst = title_ratings_lite.tconst
+WHERE titleType = 'movie' AND averageRating = 8;
+
+-- problema 6
+
+CREATE INDEX idx_tconst_basics
+ON title_basics_lite(tconst);
+
+CREATE INDEX idx_tct_basics
+ON title_ratings_lite(tconst);
+
+CREATE INDEX idx_titleType_basics
+ON title_basics_lite(titleType);
+
+CREATE INDEX idx_averageRating_basics
+ON title_ratings_lite(averageRating);
+
+EXPLAIN
+SELECT primaryTitle, averageRating, titleType
+FROM title_basics_lite, title_ratings_lite;
+
+-- problema 7
+
+CREATE VIEW v_seriale2025 AS
+    SELECT primaryTitle, startYear, genres
+    FROM title_basics_lite
+WHERE titleType = 'tvSeries';
+
+SELECT *
+FROM v_seriale2025;
+
+-- problema 8
+
+CREATE OR REPLACE VIEW v_seriale2025 AS
+    SELECT primaryTitle Titlu, startYear An_difuzare, genres Genul_serialului
+    FROM title_basics_lite
+WHERE titleType = 'tvSeries';
+
+-- problema 9
+
+SELECT *
+FROM v_seriale2025;
+
+DESCRIBE v_seriale2025;
+
+-- problema 10
+
+DROP VIEW v_seriale2025;
+
+-- problema 11
+
+CREATE VIEW v_salary AS
+    SELECT e.ename, d.dname, e.sal, s.grade
+FROM emp e
+JOIN dept d ON e.deptno = d.deptno
+JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal;
+
+SELECT *
+FROM v_salary;
+
+
+
+

@@ -1,0 +1,154 @@
+db.dept.find({deptno : {$gt : 10}})
+
+db.emp.find({empno : {$in : [7844, 7900, 7934]}})
+
+db.emp.find({$or : [{empno : 7900}, {job : "MANAGER"}]})
+
+db.dept.updateMany({}, {$mul : {deptno : 0.1}})
+
+// problema 1
+
+db.createCollection("phone")
+db.phone.insertMany(
+    [
+    {
+        empno : 7902,
+        numbers : ["0732096123", "0732096455", "0732096980"]
+    },
+    {
+        empno : 7844,
+        numbers : ["0732021644", "0732021123"]
+    }
+    ]
+)
+
+// problema 2
+
+db.emp.find({sal : {$gte : 1100}})
+
+// problema 3
+
+db.emp.find({$and : [{job : "SALESMAN"}, {sal : {$lt : 1500}}]})
+
+// problema 4
+
+db.emp.find({$and : [{job : {$ne : "MANAGER"}}, {sal : {$gte : 2000}}]})
+
+// problema 5
+
+db.emp.updateMany({job : "CLERK"}, {$inc : {sal : 50}})
+
+// problema 6
+
+db.phone.updateMany({}, {$pull : {numbers : {$in: ["0722095211", "0732021123"]}}})
+
+// problema 7
+
+db.phone.updateOne({empno : 7844 }, {$push : {numbers : "0722123123"}})
+
+// problema 8
+
+db.emp.aggregate([
+    {
+        $lookup : {
+            from : "dept",
+            localField : "deptno",
+            foreignField : "deptno",
+            as : "dept"
+        }
+    },
+    {
+        $lookup : {
+            from : "phone",
+            localField : "empno",
+            foreignField : "empno",
+            as : "numbers"
+        }
+    },
+    {
+        $addFields:{
+            numbers : {
+                $map : {
+                    input : "$numbers",
+                    as : "n",
+                    in : "$$n.numbers"
+                }
+            }
+        }
+    },
+    {
+        $addFields : {
+            dept : {
+                $cond : [
+                    {$gt : [{$size : "$dept"}, 0]},
+                    "$dept",
+                    "$$REMOVE"
+                    ]
+            },
+            numbers : {
+                $cond : [
+                    {$gt : [{$size : "$numbers"}, 0]},
+                    "$numbers",
+                    "$$REMOVE"
+                    ]
+            }
+        }
+    },
+    {
+        $merge : {
+            into : "emp",
+            whenMatched : "replace",
+            whenNotMatched : "insert"
+        }
+    }
+])
+
+// problema 9
+
+db.emp.find({
+    deptno : {$nin : [10, 30]},
+    sal : {$gt : 1000}
+})
+
+// problema 10
+
+db.emp.find({
+    hiredate : {$gt : new Date("1982-01-01")}
+})
+
+// problema 11
+
+db.emp.updateMany(
+    {job : "SALESMAN"},
+    {$unset : {comm : ""}}
+)
+
+// problema 12
+
+db.emp.updateOne(
+    {empno : 7839, sal : {$lt : 6000}},
+    {$set : {sal : 6000}}
+)
+
+// problema 13
+
+db.emp.updateOne(
+    {empno : 7902},
+    {$addToSet : {numbers : "0799999999"}}
+)
+
+// problema 14
+
+db.emp.updateOne(
+    {empno : 7844},
+    {$pop : {numbers : 1}}
+)
+
+// problema 15
+
+db.dept.updateMany(
+    {},
+    {$rename : {"loc" : "location"}}
+)
+
+
